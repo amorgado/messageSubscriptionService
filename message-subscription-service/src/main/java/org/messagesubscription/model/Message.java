@@ -1,22 +1,17 @@
-package org.messagesubscription.entity;
+package org.messagesubscription.model;
 
-import java.awt.TrayIcon.MessageType;
+import javax.validation.Valid;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import org.hibernate.validator.constraints.NotEmpty;
 
-@Entity
 public class Message {
 
-	@Id
-	@GeneratedValue
 	private Long id;
 
 	private String description;
 
-	@OneToOne
+	@Valid
+	@NotEmpty
 	private MessageType messageType;
 
 	public Long getId() {

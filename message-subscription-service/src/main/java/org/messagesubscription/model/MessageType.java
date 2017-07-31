@@ -10,6 +10,8 @@ public class MessageType {
 
 	private List<Message> messages;
 
+	private int noOfTimesReceivedByASubscription;
+
 	public Long getId() {
 		return id;
 	}

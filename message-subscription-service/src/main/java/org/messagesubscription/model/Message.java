@@ -14,6 +14,15 @@ public class Message {
 	@NotEmpty
 	private MessageType messageType;
 
+	public Message() {
+		super();
+	}
+
+	public Message(MessageType messageType) {
+		super();
+		this.messageType = messageType;
+	}
+
 	public Long getId() {
 		return id;
 	}

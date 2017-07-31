@@ -17,6 +17,21 @@ public class SubscriptionsMessageTypesEntity {
 	@ManyToOne
 	SubscriptionEntity subscription;
 
+	public SubscriptionsMessageTypesEntity() {
+		super();
+	}
+
+	public SubscriptionsMessageTypesEntity(MessageTypeEntity messageType) {
+		super();
+		this.messageType = messageType;
+	}
+
+	public SubscriptionsMessageTypesEntity(MessageTypeEntity messageType, SubscriptionEntity subscription) {
+		super();
+		this.messageType = messageType;
+		this.subscription = subscription;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -89,8 +104,7 @@ public class SubscriptionsMessageTypesEntity {
 
 	@Override
 	public String toString() {
-		return "MessageTypeSubscription [id=" + id + ", messageType=" + messageType + ", subscription=" + subscription
-				+ "]";
+		return "MessageTypeSubscription [id=" + id + ", messageType=" + messageType;
 	}
 
 }

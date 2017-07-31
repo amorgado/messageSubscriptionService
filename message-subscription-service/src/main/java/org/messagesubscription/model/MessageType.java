@@ -3,18 +3,14 @@ package org.messagesubscription.model;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import org.messagesubscription.enums.MessageTypeEnum;
 
 public class MessageType {
 
 	private Long id;
 
-	private MessageTypeEnum type;
+	private String type;
 
 	@Valid
-	@NotNull
 	private List<Message> messages;
 
 	public Long getId() {
@@ -25,11 +21,11 @@ public class MessageType {
 		this.id = id;
 	}
 
-	public MessageTypeEnum getType() {
+	public String getType() {
 		return type;
 	}
 
-	public void setType(MessageTypeEnum type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 

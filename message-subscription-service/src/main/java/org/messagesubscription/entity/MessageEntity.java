@@ -1,11 +1,9 @@
 package org.messagesubscription.entity;
 
-import java.awt.TrayIcon.MessageType;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class MessageEntity {
@@ -16,8 +14,18 @@ public class MessageEntity {
 
 	private String description;
 
-	@OneToOne
-	private MessageType messageType;
+	@ManyToOne(optional = false)
+	private MessageTypeEntity messageType;
+
+	public MessageEntity() {
+		super();
+	}
+
+	public MessageEntity(String description, MessageTypeEntity messageType) {
+		super();
+		this.description = description;
+		this.messageType = messageType;
+	}
 
 	public Long getId() {
 		return id;
@@ -35,11 +43,11 @@ public class MessageEntity {
 		this.description = description;
 	}
 
-	public MessageType getMessageType() {
+	public MessageTypeEntity getMessageType() {
 		return messageType;
 	}
 
-	public void setMessageType(MessageType messageType) {
+	public void setMessageType(MessageTypeEntity messageType) {
 		this.messageType = messageType;
 	}
 
@@ -79,7 +87,11 @@ public class MessageEntity {
 		} else if (!id.equals(other.id)) {
 			return false;
 		}
-		if (messageType != other.messageType) {
+		if (messageType == null) {
+			if (other.messageType != null) {
+				return false;
+			}
+		} else if (!messageType.equals(other.messageType)) {
 			return false;
 		}
 		return true;
@@ -87,7 +99,7 @@ public class MessageEntity {
 
 	@Override
 	public String toString() {
-		return "Message [id=" + id + ", description=" + description + ", messageType=" + messageType + "]";
+		return "MessageEntity [id=" + id + ", description=" + description + ", messageType=" + messageType + "]";
 	}
 
 }

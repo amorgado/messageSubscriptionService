@@ -1,5 +1,7 @@
 package org.messagesubscription.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.messagesubscription.model.Response;
@@ -23,9 +25,9 @@ public class SubscriptionController {
 	ISubscriptionService subscriptionService;
 
 	@RequestMapping(path = "/subscriptions", method = RequestMethod.GET)
-	public ResponseEntity<Subscription> getSubscription(@Valid @RequestBody Subscription subscription) {
-		Subscription subscriptionResponse = subscriptionService.getSubscription(subscription);
-		return new ResponseEntity<Subscription>(subscriptionResponse, HttpStatus.OK);
+	public ResponseEntity<List<Subscription>> findSubscriptions() {
+		List<Subscription> subscriptions = subscriptionService.findSubscriptions();
+		return new ResponseEntity<List<Subscription>>(subscriptions, HttpStatus.OK);
 	}
 
 	@RequestMapping(path = "/subscriptions", method = RequestMethod.POST)

@@ -2,6 +2,7 @@ package org.messagesubscription.entity;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -14,12 +15,22 @@ public class MessageTypeEntity {
 	@GeneratedValue
 	private Long id;
 
+	@Column(unique = true)
 	private String type;
 
-	@OneToMany(mappedBy = "messageTypeEntity")
+	@OneToMany(mappedBy = "messageType")
 	private List<SubscriptionsMessageTypesEntity> subscriptionMessageTypes;
-	@OneToMany(mappedBy = "messageTypeEntity")
+	@OneToMany(mappedBy = "messageType")
 	private List<MessageEntity> messages;
+
+	public MessageTypeEntity() {
+		super();
+	}
+
+	public MessageTypeEntity(String type) {
+		super();
+		this.type = type;
+	}
 
 	public Long getId() {
 		return id;

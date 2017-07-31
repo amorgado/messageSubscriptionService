@@ -2,7 +2,9 @@ package org.messagesubscription.entity;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -14,12 +16,26 @@ public class SubscriptionEntity {
 	@GeneratedValue
 	private Long id;
 
+	@Column(unique = true)
 	private String email;
 
-	// Here it would be good to have a unique thing like an email or social security
-
-	@OneToMany(mappedBy = "messageTypeEntity")
+	@OneToMany(mappedBy = "subscription", fetch = FetchType.EAGER)
 	private List<SubscriptionsMessageTypesEntity> subscriptionsMessageTypes;
+
+	public SubscriptionEntity() {
+		super();
+	}
+
+	public SubscriptionEntity(String email) {
+		super();
+		this.email = email;
+	}
+
+	public SubscriptionEntity(String email, List<SubscriptionsMessageTypesEntity> subscriptionsMessageTypes) {
+		super();
+		this.email = email;
+		this.subscriptionsMessageTypes = subscriptionsMessageTypes;
+	}
 
 	public Long getId() {
 		return id;

@@ -2,15 +2,12 @@ package org.messagesubscription.model;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
 public class MessageType {
 
 	private Long id;
 
 	private String type;
 
-	@Valid
 	private List<Message> messages;
 
 	public Long getId() {

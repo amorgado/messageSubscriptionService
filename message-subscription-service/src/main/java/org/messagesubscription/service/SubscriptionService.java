@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import org.messagesubscription.entity.MessageTypeEntity;
 import org.messagesubscription.entity.SubscriptionEntity;
 import org.messagesubscription.entity.SubscriptionsMessageTypesEntity;
@@ -17,6 +15,7 @@ import org.messagesubscription.repository.SubscriptionRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 @Service
@@ -42,20 +41,9 @@ public class SubscriptionService implements ISubscriptionService {
 			BeanUtils.copyProperties(subscription, newSubscriptionEntity);
 			subscriptionRepo.saveAndFlush(newSubscriptionEntity);
 		}
-		List<MessageType> messageTypes = subscription.getMessageTypes();
-		List<SubscriptionsMessageTypesEntity> subscriptionsMessageTypes = new ArrayList<SubscriptionsMessageTypesEntity>();
-		for (MessageType messageType : messageTypes) {
-			Optional<MessageTypeEntity> existingMessageType = messageTypeRepo.findByType(messageType.getType());
-			if (existingMessageType.isPresent()) {
-				SubscriptionsMessageTypesEntity subMessageTypeEntity = new SubscriptionsMessageTypesEntity(existingMessageType.get(), newSubscriptionEntity);
-				subscriptionsMessageTypes.add(subMessageTypeEntity);
-			} else {
-				throw new RuntimeException("Subscription can not be created. Message type doesn't exist.");
-			}
-		}
-		subscriptionMessageTypeRepo.saveAll(subscriptionsMessageTypes);
 
-		copyFromSubscriptionEntityToSubscription(newSubscriptionEntity, subscription);
+		saveMessagesForSubscription(subscription, newSubscriptionEntity, "created");
+
 		return subscription;
 	}
 
@@ -76,21 +64,25 @@ public class SubscriptionService implements ISubscriptionService {
 			subscriptionMessageTypeRepo.deleteById(subMType.getId());
 		}
 
+		saveMessagesForSubscription(subscription, currentSubscriptionEntity.get(), "updated");
+		return subscription;
+	}
+
+	private void saveMessagesForSubscription(Subscription subscription, SubscriptionEntity currentSubscriptionEntity, String updatedOrCreatedMsg) {
 		List<MessageType> messageTypes = subscription.getMessageTypes();
 		List<SubscriptionsMessageTypesEntity> subscriptionsMessageTypes = new ArrayList<SubscriptionsMessageTypesEntity>();
 		for (MessageType messageType : messageTypes) {
 			Optional<MessageTypeEntity> existingMessageType = messageTypeRepo.findByType(messageType.getType());
 			if (existingMessageType.isPresent()) {
-				SubscriptionsMessageTypesEntity subMessageTypeEntity = new SubscriptionsMessageTypesEntity(existingMessageType.get(), currentSubscriptionEntity.get());
+				SubscriptionsMessageTypesEntity subMessageTypeEntity = new SubscriptionsMessageTypesEntity(existingMessageType.get(), currentSubscriptionEntity);
 				subscriptionsMessageTypes.add(subMessageTypeEntity);
 			} else {
-				throw new RuntimeException("Subscription can not be updated. Message type doesn't exist.");
+				throw new RuntimeException("Subscription can not be " + updatedOrCreatedMsg + ". Message type doesn't exist.");
 			}
 		}
 		subscriptionMessageTypeRepo.saveAll(subscriptionsMessageTypes);
 
-		copyFromSubscriptionEntityToSubscription(currentSubscriptionEntity.get(), subscription);
-		return subscription;
+		copyFromSubscriptionEntityToSubscription(currentSubscriptionEntity, subscription);
 	}
 
 	@Override

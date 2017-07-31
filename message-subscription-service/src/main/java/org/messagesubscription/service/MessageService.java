@@ -13,6 +13,7 @@ import org.messagesubscription.repository.MessageTypeRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MessageService implements IMessageService {
@@ -24,20 +25,16 @@ public class MessageService implements IMessageService {
 	MessageTypeRepository messageTypeRepo;
 
 	@Override
+	@Transactional
 	public Message createMessage(Message message) {
 		Optional<MessageTypeEntity> existingMessageType = messageTypeRepo.findByType(message.getMessageType().getType());
-		Message newMessage = null;
 		MessageEntity newMessageEntity = null;
-		if (existingMessageType.isPresent()) {
-			MessageEntity messageEntity = new MessageEntity();
-			BeanUtils.copyProperties(message, messageEntity);
-			messageEntity.setMessageType(existingMessageType.get());
-			newMessageEntity = messageRepo.saveAndFlush(messageEntity);
+		if (!existingMessageType.isPresent()) {
+			throw new RuntimeException("Message can not be created because message type " + message.getMessageType().getType() + " doesn't exist.");
+		} else {
+			newMessageEntity = messageRepo.saveAndFlush(new MessageEntity(message.getDescription(), existingMessageType.get()));
 		}
-		if (newMessageEntity != null) {
-			BeanUtils.copyProperties(newMessageEntity, newMessage);
-		}
-		return newMessage;
+		return populateMessageFromMessageEntity(newMessageEntity);
 	}
 
 	@Override
@@ -45,12 +42,17 @@ public class MessageService implements IMessageService {
 		List<MessageEntity> existingMessages = messageRepo.findAll();
 		List<Message> messages = new ArrayList<Message>();
 		for (MessageEntity existingMessage : existingMessages) {
-			Message message = new Message(new MessageType());
-			BeanUtils.copyProperties(existingMessage, message);
-			BeanUtils.copyProperties(existingMessage.getMessageType(), message.getMessageType(), "messages");
+			Message message = populateMessageFromMessageEntity(existingMessage);
 			messages.add(message);
 		}
 		return messages;
+	}
+
+	private Message populateMessageFromMessageEntity(MessageEntity existingMessage) {
+		Message message = new Message(new MessageType());
+		BeanUtils.copyProperties(existingMessage, message);
+		BeanUtils.copyProperties(existingMessage.getMessageType(), message.getMessageType(), "messages");
+		return message;
 	}
 
 }

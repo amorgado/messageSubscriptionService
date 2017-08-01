@@ -1,8 +1,5 @@
 package org.messagesubscription;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.messagesubscription.entity.MessageEntity;
 import org.messagesubscription.entity.MessageTypeEntity;
 import org.messagesubscription.entity.SubscriptionEntity;
@@ -40,41 +37,34 @@ public class MessageSubscriptionServiceApplication {
 			MessageTypeEntity blueType = new MessageTypeEntity(MessageTypeEnum.BLUE.name());
 			MessageTypeEntity greenType = new MessageTypeEntity(MessageTypeEnum.GREEN.name());
 			MessageTypeEntity yellowType = new MessageTypeEntity(MessageTypeEnum.YELLOW.name());
-			List<MessageTypeEntity> messageTypes = new ArrayList<MessageTypeEntity>();
-			messageTypes.add(redType);
-			messageTypes.add(blueType);
-			messageTypes.add(greenType);
-			messageTypes.add(yellowType);
-			messageTypeRepo.saveAll(messageTypes);
+			messageTypeRepo.save(redType);
+			messageTypeRepo.save(blueType);
+			messageTypeRepo.save(greenType);
+			messageTypeRepo.save(yellowType);
+			messageTypeRepo.flush();
 
 			messageRepo.deleteAll();
-			messageRepo.saveAndFlush(new MessageEntity("Red color is hot.", redType));
-			messageRepo.saveAndFlush(new MessageEntity("Red color is very hot.", redType));
-			messageRepo.saveAndFlush(new MessageEntity("Blue color is cold.", blueType));
+			messageRepo.save(new MessageEntity("Red color is hot.", redType));
+			messageRepo.save(new MessageEntity("Red color is very hot.", redType));
+			messageRepo.save(new MessageEntity("Blue color is cold.", blueType));
+			messageRepo.flush();
 
 			subscriptionRepo.deleteAll();
 			SubscriptionEntity subscriptionEntity1 = new SubscriptionEntity("alexei_morgado@yahoo.com");
-			subscriptionRepo.saveAndFlush(subscriptionEntity1);
+			subscriptionRepo.save(subscriptionEntity1);
 
 			subscriptionMessageTypeRepo.deleteAll();
-			SubscriptionsMessageTypesEntity subscription1MessageTypeEntity1 = new SubscriptionsMessageTypesEntity(redType, subscriptionEntity1);
-			SubscriptionsMessageTypesEntity subscription1MessageTypeEntity2 = new SubscriptionsMessageTypesEntity(blueType, subscriptionEntity1);
-			List<SubscriptionsMessageTypesEntity> subscriptionsMessageTypesEntities1 = new ArrayList<SubscriptionsMessageTypesEntity>();
-			subscriptionsMessageTypesEntities1.add(subscription1MessageTypeEntity1);
-			subscriptionsMessageTypesEntities1.add(subscription1MessageTypeEntity2);
-			subscriptionMessageTypeRepo.saveAll(subscriptionsMessageTypesEntities1);
+			subscriptionMessageTypeRepo.save(new SubscriptionsMessageTypesEntity(redType, subscriptionEntity1));
+			subscriptionMessageTypeRepo.save(new SubscriptionsMessageTypesEntity(blueType, subscriptionEntity1));
+			subscriptionMessageTypeRepo.save(new SubscriptionsMessageTypesEntity(yellowType, subscriptionEntity1));
 
-			// subscriptionRepo.saveAndFlush(subscriptionEntity1);
+			SubscriptionEntity subscriptionEntity2 = new SubscriptionEntity("jorge_gonzalez@gmail.com");
+			subscriptionRepo.save(subscriptionEntity2);
+			subscriptionRepo.flush();
 
-			// SubscriptionsMessageTypesEntity subscription2MessageTypeEntity1 = new SubscriptionsMessageTypesEntity(greenType);
-			// SubscriptionsMessageTypesEntity subscription2MessageTypeEntity2 = new SubscriptionsMessageTypesEntity(yellowType);
-			// List<SubscriptionsMessageTypesEntity> subscriptionsMessageTypesEntities2 = new ArrayList<SubscriptionsMessageTypesEntity>();
-			// subscriptionsMessageTypesEntities1.add(subscription2MessageTypeEntity1);
-			// subscriptionsMessageTypesEntities1.add(subscription2MessageTypeEntity2);
-			// subscriptionMessageTypeRepo.saveAll(subscriptionsMessageTypesEntities2);
-			//
-			// SubscriptionEntity subscriptionEntity2 = new SubscriptionEntity("roberto_gonzalez@yahoo.com", subscriptionsMessageTypesEntities2);
-			// subscriptionRepo.saveAndFlush(subscriptionEntity2);
+			subscriptionMessageTypeRepo.save(new SubscriptionsMessageTypesEntity(greenType, subscriptionEntity2));
+			subscriptionMessageTypeRepo.save(new SubscriptionsMessageTypesEntity(yellowType, subscriptionEntity2));
+			subscriptionMessageTypeRepo.flush();
 
 		};
 	}

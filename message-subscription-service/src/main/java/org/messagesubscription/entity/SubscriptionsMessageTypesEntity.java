@@ -104,7 +104,7 @@ public class SubscriptionsMessageTypesEntity {
 
 	@Override
 	public String toString() {
-		return "MessageTypeSubscription [id=" + id + ", messageType=" + messageType;
+		return "MessageTypeSubscription [id=" + id + ", messageType=" + messageType + "]";
 	}
 
 }

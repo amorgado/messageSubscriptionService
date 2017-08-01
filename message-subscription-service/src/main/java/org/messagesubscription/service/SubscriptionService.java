@@ -82,7 +82,7 @@ public class SubscriptionService implements ISubscriptionService {
 		}
 		subscriptionMessageTypeRepo.saveAll(subscriptionsMessageTypes);
 
-		copyFromSubscriptionEntityToSubscription(currentSubscriptionEntity, subscription);
+		copyMessagesFromSubscriptionEntityToSubscription(currentSubscriptionEntity, subscription);
 	}
 
 	@Override
@@ -99,20 +99,25 @@ public class SubscriptionService implements ISubscriptionService {
 		List<Subscription> subscriptions = new ArrayList<Subscription>();
 		for (SubscriptionEntity existingSubscription : existingSubscriptions) {
 			Subscription subscription = new Subscription();
-			copyFromSubscriptionEntityToSubscription(existingSubscription, subscription);
+			copyMessagesFromSubscriptionEntityToSubscription(existingSubscription, subscription);
 			subscriptions.add(subscription);
 		}
 		return subscriptions;
 	}
 
-	private void copyFromSubscriptionEntityToSubscription(SubscriptionEntity subscriptionEntity, Subscription subscription) {
+	private void copyMessagesFromSubscriptionEntityToSubscription(SubscriptionEntity subscriptionEntity, Subscription subscription) {
 		BeanUtils.copyProperties(subscriptionEntity, subscription);
-		List<SubscriptionsMessageTypesEntity> subscriptionsMessageTypes = subscriptionEntity.getSubscriptionsMessageTypes();
+		List<SubscriptionsMessageTypesEntity> existingSubsMessageTypes = subscriptionEntity.getSubscriptionsMessageTypes();
+
 		List<MessageType> messageTypes = new ArrayList<MessageType>();
-		if (!CollectionUtils.isEmpty(subscriptionsMessageTypes)) {
-			for (SubscriptionsMessageTypesEntity existingSubscriptionsMessageTypes : subscriptionsMessageTypes) {
+		if (!CollectionUtils.isEmpty(existingSubsMessageTypes)) {
+			for (SubscriptionsMessageTypesEntity existingSubscriptionsMessageTypes : existingSubsMessageTypes) {
 				MessageType messageType = new MessageType();
 				BeanUtils.copyProperties(existingSubscriptionsMessageTypes.getMessageType(), messageType, "messages");
+				System.out.println("MsTypeId " + existingSubscriptionsMessageTypes.getMessageType().getId());
+				int noOfMsTypesBySubscription = subscriptionMessageTypeRepo.findNumberOfMessageTypesBySubscription(existingSubscriptionsMessageTypes.getMessageType().getId());
+				System.out.println("noOfMsTypesBySubscription = " + noOfMsTypesBySubscription);
+				messageType.setNoOfTimesReceivedByASubscription(noOfMsTypesBySubscription);
 				messageTypes.add(messageType);
 			}
 		}

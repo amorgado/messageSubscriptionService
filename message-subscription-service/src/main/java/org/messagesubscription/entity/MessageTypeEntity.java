@@ -66,7 +66,7 @@ public class MessageTypeEntity {
 
 	@Override
 	public String toString() {
-		return "MessageTypeEntity [id=" + id + ", type=" + type + ", subscriptionMessageTypes=" + subscriptionMessageTypes + ", messages=" + messages + "]";
+		return "MessageTypeEntity [id=" + id + ", type=" + type + "]";
 	}
 
 	@Override

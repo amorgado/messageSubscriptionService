@@ -31,10 +31,15 @@ public class SubscriptionController {
 	}
 
 	@RequestMapping(path = "/subscriptions", method = RequestMethod.POST)
-	public ResponseEntity<Response> createSubscription(@Valid @RequestBody Subscription subscription) {
-		subscriptionService.createSubscription(subscription);
-		Response response = new Response("Subscription created successfully");
-		return new ResponseEntity<Response>(response, HttpStatus.CREATED);
+	public ResponseEntity<Response> createSubscription(@Valid @RequestBody Subscription inputSubscription) {
+		Subscription newSubscription = subscriptionService.createSubscription(inputSubscription);
+		ResponseEntity<Response> responseEntity = null;
+		if (newSubscription != null) {
+			responseEntity = new ResponseEntity<Response>(new Response("Subscription created successfully"), HttpStatus.CREATED);
+		} else {
+			responseEntity = new ResponseEntity<Response>(new Response("Subscription was not created due to an error."), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return responseEntity;
 	}
 
 	@RequestMapping(path = "/subscriptions", method = RequestMethod.PUT)

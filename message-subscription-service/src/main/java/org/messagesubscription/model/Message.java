@@ -1,13 +1,17 @@
 package org.messagesubscription.model;
 
+import javax.validation.Valid;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class Message {
 
 	private Long id;
 
+	@NotEmpty
 	private String description;
 
-	// @Valid
-	// @NotEmpty
+	@Valid
 	private MessageType messageType;
 
 	public Message() {

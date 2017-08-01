@@ -19,6 +19,16 @@ public class Subscription {
 	@NotEmpty
 	private List<MessageType> messageTypes;
 
+	public Subscription() {
+		super();
+	}
+
+	public Subscription(Long id, String email) {
+		super();
+		this.id = id;
+		this.email = email;
+	}
+
 	public Long getId() {
 		return id;
 	}

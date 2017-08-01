@@ -12,6 +12,8 @@ import org.messagesubscription.model.Subscription;
 import org.messagesubscription.repository.MessageTypeRepository;
 import org.messagesubscription.repository.SubscriptionMessageTypeRepository;
 import org.messagesubscription.repository.SubscriptionRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ import org.springframework.util.CollectionUtils;
 
 @Service
 public class SubscriptionService implements ISubscriptionService {
+
+	private static final Logger logger = LoggerFactory.getLogger(SubscriptionService.class);
 
 	@Autowired
 	private SubscriptionRepository subscriptionRepo;
@@ -32,19 +36,19 @@ public class SubscriptionService implements ISubscriptionService {
 
 	@Override
 	@Transactional
-	public Subscription createSubscription(Subscription subscription) {
-		SubscriptionEntity newSubscriptionEntity = new SubscriptionEntity();
-		Optional<SubscriptionEntity> existingSubscription = subscriptionRepo.findByEmail(subscription.getEmail());
+	public Subscription createSubscription(Subscription inputSubscription) {
+		Subscription newSubscription = null;
+		Optional<SubscriptionEntity> existingSubscription = subscriptionRepo.findByEmail(inputSubscription.getEmail());
 		if (existingSubscription.isPresent()) {
-			throw new RuntimeException("A subscription with email " + subscription.getEmail() + " already exists.");
+			throw new RuntimeException("A subscription with email " + inputSubscription.getEmail() + " already exists.");
 		} else {
-			BeanUtils.copyProperties(subscription, newSubscriptionEntity);
-			subscriptionRepo.saveAndFlush(newSubscriptionEntity);
+			SubscriptionEntity createdSubscriptionEntity = subscriptionRepo.saveAndFlush(new SubscriptionEntity(inputSubscription.getEmail()));
+			List<SubscriptionsMessageTypesEntity> createdSubscriptionsMessageTypes = saveSubscriptionMessageTypes(inputSubscription, createdSubscriptionEntity, false);
+			if (createdSubscriptionEntity != null && createdSubscriptionsMessageTypes != null) {
+				newSubscription = new Subscription(createdSubscriptionEntity.getId(), createdSubscriptionEntity.getEmail());
+			}
 		}
-
-		saveMessagesForSubscription(subscription, newSubscriptionEntity, "created");
-
-		return subscription;
+		return newSubscription;
 	}
 
 	@Override
@@ -64,25 +68,24 @@ public class SubscriptionService implements ISubscriptionService {
 			subscriptionMessageTypeRepo.deleteById(subMType.getId());
 		}
 
-		saveMessagesForSubscription(subscription, currentSubscriptionEntity.get(), "updated");
+		saveSubscriptionMessageTypes(subscription, currentSubscriptionEntity.get(), true);
 		return subscription;
 	}
 
-	private void saveMessagesForSubscription(Subscription subscription, SubscriptionEntity currentSubscriptionEntity, String updatedOrCreatedMsg) {
+	private List<SubscriptionsMessageTypesEntity> saveSubscriptionMessageTypes(Subscription subscription, SubscriptionEntity currentSubscriptionEntity, boolean updating) {
 		List<MessageType> messageTypes = subscription.getMessageTypes();
 		List<SubscriptionsMessageTypesEntity> subscriptionsMessageTypes = new ArrayList<SubscriptionsMessageTypesEntity>();
-		for (MessageType messageType : messageTypes) {
-			Optional<MessageTypeEntity> existingMessageType = messageTypeRepo.findByType(messageType.getType());
-			if (existingMessageType.isPresent()) {
-				SubscriptionsMessageTypesEntity subMessageTypeEntity = new SubscriptionsMessageTypesEntity(existingMessageType.get(), currentSubscriptionEntity);
-				subscriptionsMessageTypes.add(subMessageTypeEntity);
-			} else {
-				throw new RuntimeException("Subscription can not be " + updatedOrCreatedMsg + ". Message type doesn't exist.");
+		if (!CollectionUtils.isEmpty(messageTypes)) {
+			for (MessageType messageType : messageTypes) {
+				Optional<MessageTypeEntity> existingMessageType = messageTypeRepo.findByType(messageType.getType());
+				if (existingMessageType.isPresent()) {
+					subscriptionsMessageTypes.add(new SubscriptionsMessageTypesEntity(existingMessageType.get(), currentSubscriptionEntity));
+				} else {
+					throw new RuntimeException("Subscription can not be " + (updating ? "updated" : "created") + ". Message type doesn't exist.");
+				}
 			}
 		}
-		subscriptionMessageTypeRepo.saveAll(subscriptionsMessageTypes);
-
-		copyMessagesFromSubscriptionEntityToSubscription(currentSubscriptionEntity, subscription);
+		return subscriptionMessageTypeRepo.saveAll(subscriptionsMessageTypes);
 	}
 
 	@Override
@@ -114,9 +117,7 @@ public class SubscriptionService implements ISubscriptionService {
 			for (SubscriptionsMessageTypesEntity existingSubscriptionsMessageTypes : existingSubsMessageTypes) {
 				MessageType messageType = new MessageType();
 				BeanUtils.copyProperties(existingSubscriptionsMessageTypes.getMessageType(), messageType, "messages");
-				System.out.println("MsTypeId " + existingSubscriptionsMessageTypes.getMessageType().getId());
 				int noOfMsTypesBySubscription = subscriptionMessageTypeRepo.findNumberOfMessageTypesBySubscription(existingSubscriptionsMessageTypes.getMessageType().getId());
-				System.out.println("noOfMsTypesBySubscription = " + noOfMsTypesBySubscription);
 				messageType.setNoOfTimesReceivedByASubscription(noOfMsTypesBySubscription);
 				messageTypes.add(messageType);
 			}

@@ -32,7 +32,6 @@ public class MessageSubscriptionServiceApplication {
 	CommandLineRunner init(MessageTypeRepository messageTypeRepo, MessageRepository messageRepo, SubscriptionRepository subscriptionRepo, SubscriptionMessageTypeRepository subscriptionMessageTypeRepo) {
 		logger.trace("Entering init method");
 		return (evt) -> {
-			messageTypeRepo.deleteAll();
 			MessageTypeEntity redType = new MessageTypeEntity(MessageTypeEnum.RED.name());
 			MessageTypeEntity blueType = new MessageTypeEntity(MessageTypeEnum.BLUE.name());
 			MessageTypeEntity greenType = new MessageTypeEntity(MessageTypeEnum.GREEN.name());
@@ -43,17 +42,14 @@ public class MessageSubscriptionServiceApplication {
 			messageTypeRepo.save(yellowType);
 			messageTypeRepo.flush();
 
-			messageRepo.deleteAll();
 			messageRepo.save(new MessageEntity("Red color is hot.", redType));
 			messageRepo.save(new MessageEntity("Red color is very hot.", redType));
 			messageRepo.save(new MessageEntity("Blue color is cold.", blueType));
 			messageRepo.flush();
 
-			subscriptionRepo.deleteAll();
 			SubscriptionEntity subscriptionEntity1 = new SubscriptionEntity("alexei_morgado@yahoo.com");
 			subscriptionRepo.save(subscriptionEntity1);
 
-			subscriptionMessageTypeRepo.deleteAll();
 			subscriptionMessageTypeRepo.save(new SubscriptionsMessageTypesEntity(redType, subscriptionEntity1));
 			subscriptionMessageTypeRepo.save(new SubscriptionsMessageTypesEntity(blueType, subscriptionEntity1));
 			subscriptionMessageTypeRepo.save(new SubscriptionsMessageTypesEntity(yellowType, subscriptionEntity1));

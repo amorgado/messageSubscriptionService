@@ -12,7 +12,4 @@ public interface MessageTypeRepository extends JpaRepository<MessageTypeEntity, 
 
 	public Optional<MessageTypeEntity> findByType(@Param("type") String type);
 
-	// @Query("SELECT count(msType.id) from MessageTypeEntity msType JOIN SubscriptionsMessageTypesEntity subMsType WHERE msType.id = :msTypeId")
-	// public List<Object[]> findMessageTypesCount(@Param("messageTypeList") List<Long> messageTypesIds);
-
 }

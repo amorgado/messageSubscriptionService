@@ -2,10 +2,16 @@ package org.messagesubscription.model;
 
 import java.util.List;
 
+import javax.validation.constraints.Pattern;
+
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class MessageType {
 
 	private Long id;
 
+	@NotEmpty
+	@Pattern(regexp = "RED|BLUE|GREEN|YELLOW")
 	private String type;
 
 	private List<Message> messages;

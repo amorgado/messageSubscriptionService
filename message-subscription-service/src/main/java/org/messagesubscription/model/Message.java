@@ -1,6 +1,7 @@
 package org.messagesubscription.model;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -12,10 +13,23 @@ public class Message {
 	private String description;
 
 	@Valid
+	@NotNull
 	private MessageType messageType;
 
 	public Message() {
 		super();
+	}
+
+	public Message(Long id) {
+		super();
+		this.id = id;
+	}
+
+	public Message(Long id, String description, MessageType messageType) {
+		super();
+		this.id = id;
+		this.description = description;
+		this.messageType = messageType;
 	}
 
 	public Message(MessageType messageType) {

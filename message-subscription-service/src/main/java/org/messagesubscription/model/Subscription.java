@@ -23,10 +23,22 @@ public class Subscription {
 		super();
 	}
 
+	public Subscription(Long id) {
+		super();
+		this.id = id;
+	}
+
 	public Subscription(Long id, String email) {
 		super();
 		this.id = id;
 		this.email = email;
+	}
+
+	public Subscription(Long id, String email, List<MessageType> messageTypes) {
+		super();
+		this.id = id;
+		this.email = email;
+		this.messageTypes = messageTypes;
 	}
 
 	public Long getId() {

@@ -18,6 +18,21 @@ public class MessageType {
 
 	private int noOfTimesReceivedByASubscription;
 
+	public MessageType() {
+		super();
+	}
+
+	public MessageType(String type) {
+		super();
+		this.type = type;
+	}
+
+	public MessageType(String type, int noOfTimesReceivedByASubscription) {
+		super();
+		this.type = type;
+		this.noOfTimesReceivedByASubscription = noOfTimesReceivedByASubscription;
+	}
+
 	public Long getId() {
 		return id;
 	}

@@ -35,6 +35,21 @@ public class SubscriptionService implements ISubscriptionService {
 	private SubscriptionMessageTypeRepository subscriptionMessageTypeRepo;
 
 	@Override
+	public Subscription getSubscription(Long id) {
+		return populateModelFromEntity2(subscriptionRepo.getOne(id));
+	}
+
+	private Subscription populateModelFromEntity(SubscriptionEntity createdSubscriptionEntity) {
+		Subscription newSubscription = new Subscription(createdSubscriptionEntity.getId(), createdSubscriptionEntity.getEmail());
+		if (!CollectionUtils.isEmpty(createdSubscriptionEntity.getSubscriptionsMessageTypes())) {
+			List<MessageType> messageTypes = new ArrayList<MessageType>();
+			createdSubscriptionEntity.getSubscriptionsMessageTypes().stream().forEach(subMsType -> messageTypes.add(new MessageType(subMsType.getMessageType().getType())));
+			newSubscription.setMessageTypes(messageTypes);
+		}
+		return newSubscription;
+	}
+
+	@Override
 	@Transactional
 	public Subscription createSubscription(Subscription inputSubscription) {
 		Subscription newSubscription = null;
@@ -42,10 +57,16 @@ public class SubscriptionService implements ISubscriptionService {
 		if (existingSubscription.isPresent()) {
 			throw new RuntimeException("A subscription with email " + inputSubscription.getEmail() + " already exists.");
 		} else {
+			// Save subscription entity.
 			SubscriptionEntity createdSubscriptionEntity = subscriptionRepo.saveAndFlush(new SubscriptionEntity(inputSubscription.getEmail()));
-			List<SubscriptionsMessageTypesEntity> createdSubscriptionsMessageTypes = saveSubscriptionMessageTypes(inputSubscription, createdSubscriptionEntity, false);
-			if (createdSubscriptionEntity != null && createdSubscriptionsMessageTypes != null) {
-				newSubscription = new Subscription(createdSubscriptionEntity.getId(), createdSubscriptionEntity.getEmail());
+			if (createdSubscriptionEntity != null) {
+				// Save messageTypes in subscription.
+				List<SubscriptionsMessageTypesEntity> createdSubscriptionsMessageTypes = saveSubscriptionMessageTypes(inputSubscription, createdSubscriptionEntity, false);
+				if (createdSubscriptionsMessageTypes != null) {
+					newSubscription = new Subscription(createdSubscriptionEntity.getId());
+				} else {
+					throw new RuntimeException("Subscription could not be created due to an internal error.");
+				}
 			}
 		}
 		return newSubscription;
@@ -53,35 +74,46 @@ public class SubscriptionService implements ISubscriptionService {
 
 	@Override
 	@Transactional
-	public Subscription updateSubscription(Subscription subscription) {
-		if (subscription.getId() == null) {
-			throw new RuntimeException("Update can not be executed. Subscription doesn't exist.");
+	public Subscription updateSubscription(Subscription inputSubscription) {
+		Subscription updatedSubscription = null;
+		if (inputSubscription == null || inputSubscription.getId() == null) {
+			throw new RuntimeException("Update could not be executed. Subscription doesn't exist.");
 		}
-		Optional<SubscriptionEntity> currentSubscriptionEntity = subscriptionRepo.findById(subscription.getId());
-		if (!currentSubscriptionEntity.isPresent()) {
-			throw new RuntimeException("Update can not be executed. Subscription doesn't exist.");
+		Optional<SubscriptionEntity> existingSubscriptionEntity = subscriptionRepo.findById(inputSubscription.getId());
+		if (!existingSubscriptionEntity.isPresent()) {
+			throw new RuntimeException("Update could not be executed. Subscription doesn't exist.");
 		} else {
-			BeanUtils.copyProperties(subscription, currentSubscriptionEntity.get(), "subscriptionsMessageTypes");
-			subscriptionRepo.saveAndFlush(currentSubscriptionEntity.get());
+			BeanUtils.copyProperties(inputSubscription, existingSubscriptionEntity.get(), "subscriptionsMessageTypes");
+			// Updating subscription entity.
+			SubscriptionEntity updatedSubscriptionEntity = subscriptionRepo.saveAndFlush(existingSubscriptionEntity.get());
+			if (updatedSubscriptionEntity != null) {
+				// Deleting the message types related to this subscription in the table containing the many to many relationship.
+				existingSubscriptionEntity.get().getSubscriptionsMessageTypes().stream().forEach(subMsType -> subscriptionMessageTypeRepo.deleteById(subMsType.getId()));
+				if (!CollectionUtils.isEmpty(inputSubscription.getMessageTypes())) {
+					// Creating the new message types passed in the input.
+					List<SubscriptionsMessageTypesEntity> createdSubscriptionsMessageTypes = saveSubscriptionMessageTypes(inputSubscription, existingSubscriptionEntity.get(), true);
+					if (createdSubscriptionsMessageTypes != null) {
+						updatedSubscription = new Subscription(updatedSubscriptionEntity.getId());
+					} else {
+						throw new RuntimeException("Subscription could not be created due to an internal error.");
+					}
+				} else {
+					throw new RuntimeException("Update could not be executed. At least one message type is required.");
+				}
+			}
 		}
-		for (SubscriptionsMessageTypesEntity subMType : currentSubscriptionEntity.get().getSubscriptionsMessageTypes()) {
-			subscriptionMessageTypeRepo.deleteById(subMType.getId());
-		}
-
-		saveSubscriptionMessageTypes(subscription, currentSubscriptionEntity.get(), true);
-		return subscription;
+		return updatedSubscription;
 	}
 
-	private List<SubscriptionsMessageTypesEntity> saveSubscriptionMessageTypes(Subscription subscription, SubscriptionEntity currentSubscriptionEntity, boolean updating) {
-		List<MessageType> messageTypes = subscription.getMessageTypes();
+	private List<SubscriptionsMessageTypesEntity> saveSubscriptionMessageTypes(Subscription inputSubscription, SubscriptionEntity subscriptionEntity, boolean updating) {
 		List<SubscriptionsMessageTypesEntity> subscriptionsMessageTypes = new ArrayList<SubscriptionsMessageTypesEntity>();
-		if (!CollectionUtils.isEmpty(messageTypes)) {
-			for (MessageType messageType : messageTypes) {
+		if (!CollectionUtils.isEmpty(inputSubscription.getMessageTypes())) {
+			for (MessageType messageType : inputSubscription.getMessageTypes()) {
 				Optional<MessageTypeEntity> existingMessageType = messageTypeRepo.findByType(messageType.getType());
 				if (existingMessageType.isPresent()) {
-					subscriptionsMessageTypes.add(new SubscriptionsMessageTypesEntity(existingMessageType.get(), currentSubscriptionEntity));
+					subscriptionsMessageTypes.add(new SubscriptionsMessageTypesEntity(existingMessageType.get(), subscriptionEntity));
 				} else {
-					throw new RuntimeException("Subscription can not be " + (updating ? "updated" : "created") + ". Message type doesn't exist.");
+					throw new RuntimeException("Subscription can not be " + (updating ? "updated" : "created") + ". Message type '" + messageType.getType() + "' doesn't exist.");
 				}
 			}
 		}
@@ -89,40 +121,31 @@ public class SubscriptionService implements ISubscriptionService {
 	}
 
 	@Override
-	public Subscription getSubscription(Subscription subscription) {
-		Optional<SubscriptionEntity> existingSubscriptionEntity = subscriptionRepo.findByEmail(subscription.getEmail());
-		Subscription existingSubscription = new Subscription();
-		BeanUtils.copyProperties(existingSubscriptionEntity.get(), existingSubscription);
-		return existingSubscription;
-	}
-
-	@Override
 	public List<Subscription> findSubscriptions() {
+		List<Subscription> subscriptions = null;
 		List<SubscriptionEntity> existingSubscriptions = subscriptionRepo.findAll();
-		List<Subscription> subscriptions = new ArrayList<Subscription>();
-		for (SubscriptionEntity existingSubscription : existingSubscriptions) {
-			Subscription subscription = new Subscription();
-			copyMessagesFromSubscriptionEntityToSubscription(existingSubscription, subscription);
-			subscriptions.add(subscription);
+		if (!CollectionUtils.isEmpty(existingSubscriptions)) {
+			subscriptions = new ArrayList<Subscription>();
+			for (SubscriptionEntity existingSubscription : existingSubscriptions) {
+				subscriptions.add(populateModelFromEntity2(existingSubscription));
+			}
+		} else {
+			throw new RuntimeException("Not subscriptions found.");
 		}
 		return subscriptions;
 	}
 
-	private void copyMessagesFromSubscriptionEntityToSubscription(SubscriptionEntity subscriptionEntity, Subscription subscription) {
-		BeanUtils.copyProperties(subscriptionEntity, subscription);
-		List<SubscriptionsMessageTypesEntity> existingSubsMessageTypes = subscriptionEntity.getSubscriptionsMessageTypes();
-
-		List<MessageType> messageTypes = new ArrayList<MessageType>();
-		if (!CollectionUtils.isEmpty(existingSubsMessageTypes)) {
-			for (SubscriptionsMessageTypesEntity existingSubscriptionsMessageTypes : existingSubsMessageTypes) {
-				MessageType messageType = new MessageType();
-				BeanUtils.copyProperties(existingSubscriptionsMessageTypes.getMessageType(), messageType, "messages");
-				int noOfMsTypesBySubscription = subscriptionMessageTypeRepo.findNumberOfMessageTypesBySubscription(existingSubscriptionsMessageTypes.getMessageType().getId());
-				messageType.setNoOfTimesReceivedByASubscription(noOfMsTypesBySubscription);
-				messageTypes.add(messageType);
+	private Subscription populateModelFromEntity2(SubscriptionEntity subscriptionEntity) {
+		Subscription newSubscription = new Subscription(subscriptionEntity.getId(), subscriptionEntity.getEmail());
+		if (!CollectionUtils.isEmpty(subscriptionEntity.getSubscriptionsMessageTypes())) {
+			List<MessageType> messageTypes = new ArrayList<MessageType>();
+			for (SubscriptionsMessageTypesEntity existingSubMsTypes : subscriptionEntity.getSubscriptionsMessageTypes()) {
+				int noOfMsTypesBySubscription = subscriptionMessageTypeRepo.findNumberOfMessageTypesBySubscription(existingSubMsTypes.getMessageType().getId());
+				messageTypes.add(new MessageType(existingSubMsTypes.getMessageType().getType(), noOfMsTypesBySubscription));
 			}
+			newSubscription.setMessageTypes(messageTypes);
 		}
-		subscription.setMessageTypes(messageTypes);
+		return newSubscription;
 	}
 
 }

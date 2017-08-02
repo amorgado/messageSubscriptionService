@@ -10,4 +10,6 @@ public interface IMessageService {
 
 	public List<Message> findMessages();
 
+	public Message getMessage(Long id);
+
 }

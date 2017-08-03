@@ -16,9 +16,20 @@ public class MessageType {
 		super();
 	}
 
+	public MessageType(Long id) {
+		super();
+		this.id = id;
+	}
+
 	public MessageType(String type) {
 		super();
 		this.type = type;
+	}
+
+	public MessageType(String type, List<Message> messages) {
+		super();
+		this.type = type;
+		this.messages = messages;
 	}
 
 	public MessageType(String type, Integer noOfTimesReceivedByASubscription) {

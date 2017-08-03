@@ -19,7 +19,6 @@ public class MessageEntity {
 	private String description;
 
 	@ManyToOne(optional = false)
-	// @JoinColumn(name = "message_type_id")
 	private MessageTypeEntity messageType;
 
 	public MessageEntity() {

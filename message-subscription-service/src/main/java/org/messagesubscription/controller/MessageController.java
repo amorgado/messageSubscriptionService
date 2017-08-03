@@ -10,7 +10,6 @@ import org.messagesubscription.model.Response;
 import org.messagesubscription.service.IMessageService;
 import org.messagesubscription.utils.MessageSubscriptionConstants;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +35,7 @@ public class MessageController {
 	@GetMapping
 	public ResponseEntity<List<Message>> findMessage() {
 		List<Message> messages = messageService.findMessages();
-		return new ResponseEntity<List<Message>>(messages, HttpStatus.OK);
+		return ResponseEntity.ok(messages);
 	}
 
 	@PostMapping

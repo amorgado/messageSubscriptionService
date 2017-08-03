@@ -9,6 +9,7 @@ import org.messagesubscription.repository.MessageRepository;
 import org.messagesubscription.repository.MessageTypeRepository;
 import org.messagesubscription.repository.SubscriptionMessageTypeRepository;
 import org.messagesubscription.repository.SubscriptionRepository;
+import org.messagesubscription.utils.MessageSubscriptionConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -40,10 +41,10 @@ public class MessageSubscriptionServiceApplication {
 			messageTypeRepo.save(yellowType);
 			messageTypeRepo.flush();
 
-			messageRepo.save(new MessageEntity("Red color is hot.", redType));
+			messageRepo.save(new MessageEntity(MessageSubscriptionConstants.MESSAGE, redType));
 			messageRepo.flush();
 
-			SubscriptionEntity subscriptionEntity = new SubscriptionEntity("alexei_morgado@yahoo.com");
+			SubscriptionEntity subscriptionEntity = new SubscriptionEntity(MessageSubscriptionConstants.EMAIL);
 			subscriptionRepo.save(subscriptionEntity);
 			subscriptionRepo.flush();
 

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.messagesubscription.model.Response;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,7 +16,7 @@ public class ExceptionHandlerAdvice {
 
 	@ExceptionHandler({ MethodArgumentNotValidException.class })
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-	public ResponseEntity<Response> handleInputValidation(MethodArgumentNotValidException e) {
+	public Response handleInputValidation(MethodArgumentNotValidException e) {
 		List<ObjectError> errors = e.getBindingResult().getAllErrors();
 		StringBuilder sb = new StringBuilder();
 		int count = 0;
@@ -39,7 +38,7 @@ public class ExceptionHandlerAdvice {
 		}
 		Response response = new Response();
 		response.setMessage(sb.toString());
-		return new ResponseEntity<Response>(response, HttpStatus.BAD_REQUEST);
+		return response;
 	}
 
 }

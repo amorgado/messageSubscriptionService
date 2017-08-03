@@ -34,6 +34,12 @@ public class Subscription {
 		this.email = email;
 	}
 
+	public Subscription(String email, List<MessageType> messageTypes) {
+		super();
+		this.email = email;
+		this.messageTypes = messageTypes;
+	}
+
 	public Subscription(Long id, String email, List<MessageType> messageTypes) {
 		super();
 		this.id = id;

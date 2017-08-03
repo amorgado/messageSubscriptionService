@@ -17,11 +17,9 @@ public class SubscriptionsMessageTypesEntity {
 	private Long id;
 
 	@ManyToOne
-	// @JoinColumn(name = "message_type_id")
 	MessageTypeEntity messageType;
 
 	@ManyToOne
-	// @JoinColumn(name = "subscription_id")
 	SubscriptionEntity subscription;
 
 	public SubscriptionsMessageTypesEntity() {

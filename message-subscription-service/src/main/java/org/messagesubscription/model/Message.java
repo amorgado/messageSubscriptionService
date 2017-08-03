@@ -25,6 +25,12 @@ public class Message {
 		this.id = id;
 	}
 
+	public Message(String description, MessageType messageType) {
+		super();
+		this.description = description;
+		this.messageType = messageType;
+	}
+
 	public Message(Long id, String description, MessageType messageType) {
 		super();
 		this.id = id;

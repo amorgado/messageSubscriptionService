@@ -2,19 +2,26 @@ package org.messagesubscription.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "message_type_id", "subscription_id" }) })
 public class SubscriptionsMessageTypesEntity {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne
+	// @JoinColumn(name = "message_type_id")
 	MessageTypeEntity messageType;
+
 	@ManyToOne
+	// @JoinColumn(name = "subscription_id")
 	SubscriptionEntity subscription;
 
 	public SubscriptionsMessageTypesEntity() {
@@ -104,7 +111,7 @@ public class SubscriptionsMessageTypesEntity {
 
 	@Override
 	public String toString() {
-		return "MessageTypeSubscription [id=" + id + ", messageType=" + messageType + "]";
+		return "SubscriptionsMessageTypesEntity [id=" + id + ", messageType=" + messageType + "]";
 	}
 
 }

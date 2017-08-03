@@ -20,9 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import io.swagger.annotations.Api;
-
-@Api(value = "Message Controller")
+//@Api(value = "Message Controller")
 @RestController
 @RequestMapping(MessageSubscriptionConstants.MESSAGES_PATH)
 public class MessageController {

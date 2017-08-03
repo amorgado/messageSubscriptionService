@@ -16,10 +16,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
 @SpringBootApplication
-@EnableSwagger2
+// @EnableSwagger2
 public class MessageSubscriptionServiceApplication {
 
 	private static final Logger logger = LoggerFactory.getLogger(MessageSubscriptionServiceApplication.class);
@@ -43,23 +41,13 @@ public class MessageSubscriptionServiceApplication {
 			messageTypeRepo.flush();
 
 			messageRepo.save(new MessageEntity("Red color is hot.", redType));
-			messageRepo.save(new MessageEntity("Red color is very hot.", redType));
-			messageRepo.save(new MessageEntity("Blue color is cold.", blueType));
 			messageRepo.flush();
 
-			SubscriptionEntity subscriptionEntity1 = new SubscriptionEntity("alexei_morgado@yahoo.com");
-			subscriptionRepo.save(subscriptionEntity1);
-
-			subscriptionMessageTypeRepo.save(new SubscriptionsMessageTypesEntity(redType, subscriptionEntity1));
-			subscriptionMessageTypeRepo.save(new SubscriptionsMessageTypesEntity(blueType, subscriptionEntity1));
-			subscriptionMessageTypeRepo.save(new SubscriptionsMessageTypesEntity(yellowType, subscriptionEntity1));
-
-			SubscriptionEntity subscriptionEntity2 = new SubscriptionEntity("jorge_gonzalez@gmail.com");
-			subscriptionRepo.save(subscriptionEntity2);
+			SubscriptionEntity subscriptionEntity = new SubscriptionEntity("alexei_morgado@yahoo.com");
+			subscriptionRepo.save(subscriptionEntity);
 			subscriptionRepo.flush();
 
-			subscriptionMessageTypeRepo.save(new SubscriptionsMessageTypesEntity(greenType, subscriptionEntity2));
-			subscriptionMessageTypeRepo.save(new SubscriptionsMessageTypesEntity(yellowType, subscriptionEntity2));
+			subscriptionMessageTypeRepo.save(new SubscriptionsMessageTypesEntity(redType, subscriptionEntity));
 			subscriptionMessageTypeRepo.flush();
 
 		};

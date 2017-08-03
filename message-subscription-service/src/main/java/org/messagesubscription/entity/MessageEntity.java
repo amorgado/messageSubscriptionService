@@ -2,22 +2,24 @@ package org.messagesubscription.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "description", "messageType" }) })
+@Table(uniqueConstraints = { @UniqueConstraint(columnNames = { "description", "message_type_id" }) })
 public class MessageEntity {
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	private String description;
 
 	@ManyToOne(optional = false)
+	// @JoinColumn(name = "message_type_id")
 	private MessageTypeEntity messageType;
 
 	public MessageEntity() {
@@ -26,6 +28,13 @@ public class MessageEntity {
 
 	public MessageEntity(String description, MessageTypeEntity messageType) {
 		super();
+		this.description = description;
+		this.messageType = messageType;
+	}
+
+	public MessageEntity(Long id, String description, MessageTypeEntity messageType) {
+		super();
+		this.id = id;
 		this.description = description;
 		this.messageType = messageType;
 	}

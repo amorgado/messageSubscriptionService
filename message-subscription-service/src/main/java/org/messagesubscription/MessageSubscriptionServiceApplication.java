@@ -18,7 +18,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-// @EnableSwagger2
 public class MessageSubscriptionServiceApplication {
 
 	private static final Logger logger = LoggerFactory.getLogger(MessageSubscriptionServiceApplication.class);

@@ -26,11 +26,6 @@ public class SubscriptionsMessageTypesEntity {
 		super();
 	}
 
-	public SubscriptionsMessageTypesEntity(MessageTypeEntity messageType) {
-		super();
-		this.messageType = messageType;
-	}
-
 	public SubscriptionsMessageTypesEntity(MessageTypeEntity messageType, SubscriptionEntity subscription) {
 		super();
 		this.messageType = messageType;

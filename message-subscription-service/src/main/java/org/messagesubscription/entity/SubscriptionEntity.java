@@ -32,12 +32,6 @@ public class SubscriptionEntity {
 		this.email = email;
 	}
 
-	public SubscriptionEntity(String email, List<SubscriptionsMessageTypesEntity> subscriptionsMessageTypes) {
-		super();
-		this.email = email;
-		this.subscriptionsMessageTypes = subscriptionsMessageTypes;
-	}
-
 	public Long getId() {
 		return id;
 	}

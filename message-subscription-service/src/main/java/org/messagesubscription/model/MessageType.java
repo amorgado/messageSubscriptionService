@@ -26,12 +26,6 @@ public class MessageType {
 		this.type = type;
 	}
 
-	public MessageType(String type, List<Message> messages) {
-		super();
-		this.type = type;
-		this.messages = messages;
-	}
-
 	public MessageType(String type, Integer noOfTimesReceivedByASubscription) {
 		super();
 		this.type = type;

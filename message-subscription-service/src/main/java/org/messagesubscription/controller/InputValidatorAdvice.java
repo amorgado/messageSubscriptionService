@@ -36,9 +36,7 @@ public class InputValidatorAdvice {
 			}
 			count++;
 		}
-		Response response = new Response();
-		response.setMessage(sb.toString());
-		return response;
+		return new Response(sb.toString());
 	}
 
 }

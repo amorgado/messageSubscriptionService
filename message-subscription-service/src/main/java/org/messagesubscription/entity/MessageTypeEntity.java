@@ -41,21 +41,6 @@ public class MessageTypeEntity {
 		this.type = type;
 	}
 
-	public MessageTypeEntity(Long id, String type, List<MessageEntity> messages) {
-		super();
-		this.id = id;
-		this.type = type;
-		this.messages = messages;
-	}
-
-	public MessageTypeEntity(Long id, String type, List<SubscriptionsMessageTypesEntity> subscriptionMessageTypes, List<MessageEntity> messages) {
-		super();
-		this.id = id;
-		this.type = type;
-		this.subscriptionMessageTypes = subscriptionMessageTypes;
-		this.messages = messages;
-	}
-
 	public Long getId() {
 		return id;
 	}

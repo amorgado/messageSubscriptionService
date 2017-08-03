@@ -38,11 +38,6 @@ public class Message {
 		this.messageType = messageType;
 	}
 
-	public Message(MessageType messageType) {
-		super();
-		this.messageType = messageType;
-	}
-
 	public Long getId() {
 		return id;
 	}

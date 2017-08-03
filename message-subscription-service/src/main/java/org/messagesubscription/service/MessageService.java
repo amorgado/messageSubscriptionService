@@ -18,6 +18,8 @@ import org.springframework.util.CollectionUtils;
 
 @Service
 public class MessageService implements IMessageService {
+	
+	private final XLogger logger = XLoggerFactory.getXLogger(this.getClass());
 
 	@Autowired
 	MessageRepository messageRepo;
@@ -33,6 +35,7 @@ public class MessageService implements IMessageService {
 	@Override
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public Message createMessage(Message inputMessage) {
+		logger.entry(inputMessage);
 		Message newMessage = null;
 		if (inputMessage == null || inputMessage.getMessageType() == null) {
 			throw new RuntimeException("Message could not be created because message or message type are empty.");
@@ -40,10 +43,8 @@ public class MessageService implements IMessageService {
 		MessageTypeEntity existingMessageType = null;
 		if (inputMessage.getMessageType().getId() != null) {
 			existingMessageType = messageTypeRepo.getOne(inputMessage.getMessageType().getId());
-		} else if (inputMessage.getMessageType().getType() != null) {
-			existingMessageType = messageTypeRepo.findByType(inputMessage.getMessageType().getType());
 		} else {
-			throw new RuntimeException("Message could not be created because message type id or type weren't provided.");
+			throw new RuntimeException("Message could not be created because message type id wasn't provided.");
 		}
 		if (existingMessageType == null || existingMessageType.getId() == null) {
 			throw new RuntimeException("Message could not be created because message type " + inputMessage.getMessageType().getType() + " doesn't exist.");
@@ -61,11 +62,13 @@ public class MessageService implements IMessageService {
 				throw new RuntimeException("Message could not be created due to an internal error.");
 			}
 		}
+		logger.exit(newMessage);
 		return newMessage;
 	}
 
 	@Override
 	public List<Message> findMessages() {
+		logger.entry();
 		List<Message> messages = null;
 		List<MessageEntity> existingMessages = messageRepo.findAll();
 		if (!CollectionUtils.isEmpty(existingMessages)) {
@@ -76,6 +79,7 @@ public class MessageService implements IMessageService {
 		} else {
 			throw new RuntimeException("Not messages found.");
 		}
+		logger.exit(messages);
 		return messages;
 	}
 

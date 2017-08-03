@@ -13,7 +13,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class BaseControllerTest {
+public abstract class BaseControllerTest {
 
 	@Autowired
 	protected WebApplicationContext context;

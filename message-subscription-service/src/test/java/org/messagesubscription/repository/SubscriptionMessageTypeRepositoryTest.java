@@ -15,23 +15,21 @@ import org.springframework.transaction.annotation.Transactional;
 @DataJpaTest
 @Transactional
 @AutoConfigureTestDatabase
-public class SubscriptionMessageTypeRepositoryTest {
+public class SubscriptionMessageTypeRepositoryTest extends BaseRepositoryTest{
 
-	@Autowired
-	private SubscriptionMessageTypeRepository subscriptionMessageTypeRepository;
 
 	// Not cascade (doesn't have to be)
 	@Test
 	public void deleteTest() throws Exception {
 		List<SubscriptionsMessageTypesEntity> subMsTyeps = subscriptionMessageTypeRepository.findAll();
 		for (SubscriptionsMessageTypesEntity subscriptionsMessageTypesEntity : subMsTyeps) {
-			System.out.println("Before: " + subscriptionsMessageTypesEntity);
+			logger.debug("Before: " + subscriptionsMessageTypesEntity);
 		}
 		subscriptionMessageTypeRepository.deleteById((long) 1);
 		List<SubscriptionsMessageTypesEntity> subMsTyeps2 = subscriptionMessageTypeRepository.findAll();
-		System.out.println("Checking..");
+		logger.debug("Checking..");
 		for (SubscriptionsMessageTypesEntity subscriptionsMessageTypesEntity : subMsTyeps2) {
-			System.out.println("After: " + subscriptionsMessageTypesEntity);
+			logger.debug("After: " + subscriptionsMessageTypesEntity);
 		}
 	}
 

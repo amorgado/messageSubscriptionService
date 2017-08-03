@@ -45,6 +45,7 @@ public class SubscriptionService implements ISubscriptionService {
 	@Override
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public Subscription createSubscription(Subscription inputSubscription) {
+		logger.entry(inputSubscription);
 		Subscription newSubscription = null;
 		Optional<SubscriptionEntity> existingSubscription = subscriptionRepo.findByEmail(inputSubscription.getEmail());
 		if (existingSubscription.isPresent()) {
@@ -62,12 +63,14 @@ public class SubscriptionService implements ISubscriptionService {
 				}
 			}
 		}
+		logger.exit(newSubscription);
 		return newSubscription;
 	}
 
 	@Override
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public Subscription updateSubscription(Subscription inputSubscription) {
+		logger.entry(inputSubscription);
 		Subscription updatedSubscription = null;
 		if (inputSubscription == null || inputSubscription.getId() == null) {
 			throw new RuntimeException("Update could not be executed. Subscription doesn't exist.");
@@ -98,20 +101,20 @@ public class SubscriptionService implements ISubscriptionService {
 				}
 			}
 		}
+		logger.exit(updatedSubscription);
 		return updatedSubscription;
 	}
 
 	private List<SubscriptionsMessageTypesEntity> saveSubscriptionMessageTypes(Subscription inputSubscription, SubscriptionEntity subscriptionEntity, boolean updating) {
+		logger.entry(inputSubscription, subscriptionEntity);
 		List<SubscriptionsMessageTypesEntity> subscriptionsMessageTypes = new ArrayList<SubscriptionsMessageTypesEntity>();
 		if (!CollectionUtils.isEmpty(inputSubscription.getMessageTypes())) {
 			for (MessageType messageType : inputSubscription.getMessageTypes()) {
 				MessageTypeEntity existingMessageType = null;
 				if (messageType.getId() != null) {
 					existingMessageType = messageTypeRepo.getOne(messageType.getId());
-				} else if (StringUtils.isNoneBlank(messageType.getType())) {
-					existingMessageType = messageTypeRepo.findByType(messageType.getType());
 				} else {
-					throw new RuntimeException("Subscription can not be " + (updating ? "updated" : "created") + ". Message type id or type weren't provided.");
+					throw new RuntimeException("Subscription can not be " + (updating ? "updated" : "created") + ". Message type id wasn't provided.");
 				}
 				if (existingMessageType != null) {
 					subscriptionsMessageTypes.add(new SubscriptionsMessageTypesEntity(existingMessageType, subscriptionEntity));
@@ -126,11 +129,13 @@ public class SubscriptionService implements ISubscriptionService {
 		} catch (DataIntegrityViolationException e) {
 			throw new RuntimeException("Subscription could not be created because at least one of the combinations of email and message type you are trying to update already exists.");
 		}
+		logger.exit(createdSubMsTypes);
 		return createdSubMsTypes;
 	}
 
 	@Override
 	public List<Subscription> findSubscriptions() {
+		logger.entry();
 		List<Subscription> subscriptions = null;
 		List<SubscriptionEntity> existingSubscriptions = subscriptionRepo.findAll();
 		if (!CollectionUtils.isEmpty(existingSubscriptions)) {
@@ -141,6 +146,7 @@ public class SubscriptionService implements ISubscriptionService {
 		} else {
 			throw new RuntimeException("Not subscriptions found.");
 		}
+		logger.exit(subsriptions);
 		return subscriptions;
 	}
 

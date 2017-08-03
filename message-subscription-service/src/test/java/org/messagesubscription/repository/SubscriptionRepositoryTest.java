@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.messagesubscription.entity.SubscriptionEntity;
 import org.messagesubscription.entity.SubscriptionsMessageTypesEntity;
+import org.messagesubscription.utils.MessageSubscriptionConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,33 +17,23 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-@RunWith(SpringRunner.class)
-@DataJpaTest
-@Transactional
-@AutoConfigureTestDatabase
-public class SubscriptionRepositoryTest {
+public class SubscriptionRepositoryTest extends BaseRepositoryTest{
 
 	public static final Logger logger = LoggerFactory.getLogger(SubscriptionRepositoryTest.class);
-
-	@Autowired
-	private SubscriptionRepository subscriptionRepo;
-
-	@Autowired
-	private SubscriptionMessageTypeRepository subscriptionMessageTypeRepository;
 
 	@Test
 	public void findSubscriptionsTest() throws Exception {
 		List<SubscriptionEntity> subscriptions = subscriptionRepo.findAll();
-		assertThat(subscriptions.get(0).getEmail().equals("alexei_morgado@yahoo.com"));
+		assertThat(subscriptions.get(0).getEmail().equals(MessageSubscriptionConstants.MESSAGE));
 		for (SubscriptionEntity subscriptionEntity : subscriptions) {
-			System.out.println(subscriptionEntity);
+			logger.debug(subscriptionEntity.toString());
 		}
 	}
 
 	@Test
 	public void getSubscriptionsTest() throws Exception {
 		SubscriptionEntity subscription = subscriptionRepo.getOne((long) 8);
-		assertThat(subscription.getEmail().equals("alexei_morgado@yahoo.com"));
+		assertThat(subscription.getEmail().equals(MessageSubscriptionConstants.MESSAGE));
 
 	}
 
@@ -51,20 +42,20 @@ public class SubscriptionRepositoryTest {
 	public void deleteCascadeFromSubscriptionToSubsMessageTypesTest() throws Exception {
 		List<SubscriptionEntity> subscriptionsTypes = subscriptionRepo.findAll();
 		for (SubscriptionEntity subscriptionEntity : subscriptionsTypes) {
-			System.out.println("\n\nBefore: " + subscriptionEntity + "\n\n");
+			logger.debug("\n\nBefore: " + subscriptionEntity + "\n\n");
 		}
 		List<SubscriptionsMessageTypesEntity> subscriptionsMessageTypes = subscriptionMessageTypeRepository.findAll();
 		for (SubscriptionsMessageTypesEntity subscriptionMessageTypeEntity : subscriptionsMessageTypes) {
-			System.out.println("\n\nBefore: " + subscriptionMessageTypeEntity + "\n\n");
+			logger.debug("\n\nBefore: " + subscriptionMessageTypeEntity + "\n\n");
 		}
 		subscriptionRepo.deleteById((long) 1);
 		List<SubscriptionEntity> subscriptionsTypes2 = subscriptionRepo.findAll();
 		for (SubscriptionEntity subscriptionEntity : subscriptionsTypes2) {
-			System.out.println("\n\nAfter:  " + subscriptionEntity + "\n\n");
+			logger.debug("\n\nAfter:  " + subscriptionEntity + "\n\n");
 		}
 		List<SubscriptionsMessageTypesEntity> subscriptionsMessageTypes2 = subscriptionMessageTypeRepository.findAll();
 		for (SubscriptionsMessageTypesEntity subscriptionMessageTypeEntity : subscriptionsMessageTypes2) {
-			System.out.println("\n\nAfter: " + subscriptionMessageTypeEntity + "\n\n");
+			logger.debug("\n\nAfter: " + subscriptionMessageTypeEntity + "\n\n");
 		}
 	}
 
@@ -72,7 +63,7 @@ public class SubscriptionRepositoryTest {
 	public void updateRepositoryTest() throws Exception {
 		List<SubscriptionEntity> subscriptionsTypes = subscriptionRepo.findAll();
 		for (SubscriptionEntity subscriptionEntity : subscriptionsTypes) {
-			System.out.println("\n\n" + subscriptionEntity + "\n\n");
+			logger.debug("\n\n" + subscriptionEntity + "\n\n");
 		}
 	}
 

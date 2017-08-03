@@ -20,7 +20,7 @@ public class SubscriptionControllerTest extends BaseControllerTest {
 
 	@Test
 	public void findSubscriptionsTest() throws Exception {
-		this.mvc.perform(get(MessageSubscriptionConstants.SUBSRIPTIONS_PATH).contentType(MediaType.APPLICATION_JSON)).andExpect(content().string(containsString("alexei_morgado@yahoo.com"))).andExpect(status().isOk()).andReturn();
+		this.mvc.perform(get(MessageSubscriptionConstants.SUBSRIPTIONS_PATH).contentType(MediaType.APPLICATION_JSON)).andExpect(content().string(containsString(MessageSubscriptionConstants.EMAIL))).andExpect(status().isOk()).andReturn();
 	}
 
 	@Test
@@ -36,7 +36,7 @@ public class SubscriptionControllerTest extends BaseControllerTest {
 	public void updateSubscriptionsTest() throws Exception {
 		List<MessageType> messageTypes = new ArrayList<MessageType>();
 		messageTypes.add(new MessageType((long) 3));
-		Subscription subscription = new Subscription((long) 1, "alexei_morgado@yahoo.com", messageTypes);
+		Subscription subscription = new Subscription((long) 1, MessageSubscriptionConstants.EMAIL, messageTypes);
 		String strSubscription = objectMapper.writeValueAsString(subscription);
 
 		this.mvc.perform(put(MessageSubscriptionConstants.SUBSRIPTIONS_PATH).content(strSubscription).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andReturn();

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-public class ExceptionHandlerAdvice {
+public class InputValidatorAdvice {
 
 	@ExceptionHandler({ MethodArgumentNotValidException.class })
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)

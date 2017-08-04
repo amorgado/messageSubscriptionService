@@ -28,7 +28,7 @@ public class MessageSubscriptionServiceApplication {
 
 	@Bean
 	CommandLineRunner init(MessageTypeRepository messageTypeRepo, MessageRepository messageRepo, SubscriptionRepository subscriptionRepo, SubscriptionMessageTypeRepository subscriptionMessageTypeRepo) {
-		logger.trace("Entering init method");
+		logger.entry();
 		return (evt) -> {
 			MessageTypeEntity redType = new MessageTypeEntity(MessageTypeEnum.RED.name());
 			MessageTypeEntity blueType = new MessageTypeEntity(MessageTypeEnum.BLUE.name());

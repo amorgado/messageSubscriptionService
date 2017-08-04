@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Don't forget to set system property -DLog4jContextSelector=org.apache.logging.log4j.core.async.AsyncLoggerContextSelector to make all loggers asynchronous. -->
 <Configuration name="Message Subscription Logging" xmlns:xi="http://www.w3.org/2001/XInclude">
 	<Properties>
 		<Property name="PatternLayout">%d{DEFAULT} [%thread] %-5level %class{36}.%M %L - %msg %n</Property>
@@ -14,6 +13,7 @@
 		<Logger name="org.springframework" level="OFF" />
 		<Logger name="org.hibernate" level="OFF" />
 		<Logger name="org.apache" level="OFF" />
+		<Logger name="com.zaxxer.hikari" level="OFF" />
 		<Logger name="org.hibernate.validator.internal" level="OFF" />
 		<Root level="TRACE" includeLocation="true">
 			<AppenderRef ref="Console" />

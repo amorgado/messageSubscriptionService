@@ -9,6 +9,8 @@ import org.messagesubscription.model.Message;
 import org.messagesubscription.model.MessageType;
 import org.messagesubscription.repository.MessageRepository;
 import org.messagesubscription.repository.MessageTypeRepository;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,7 @@ import org.springframework.util.CollectionUtils;
 
 @Service
 public class MessageService implements IMessageService {
-	
+
 	private final XLogger logger = XLoggerFactory.getXLogger(this.getClass());
 
 	@Autowired

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.messagesubscription.entity.MessageTypeEntity;
 import org.messagesubscription.entity.SubscriptionEntity;
 import org.messagesubscription.entity.SubscriptionsMessageTypesEntity;
@@ -13,8 +12,8 @@ import org.messagesubscription.model.Subscription;
 import org.messagesubscription.repository.MessageTypeRepository;
 import org.messagesubscription.repository.SubscriptionMessageTypeRepository;
 import org.messagesubscription.repository.SubscriptionRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,7 +25,7 @@ import org.springframework.util.CollectionUtils;
 @Service
 public class SubscriptionService implements ISubscriptionService {
 
-	private static final Logger logger = LoggerFactory.getLogger(SubscriptionService.class);
+	private final XLogger logger = XLoggerFactory.getXLogger(this.getClass());
 
 	@Autowired
 	private SubscriptionRepository subscriptionRepo;
@@ -83,7 +82,12 @@ public class SubscriptionService implements ISubscriptionService {
 			// updatedSubscription = this.createSubscription(inputSubscription);
 			BeanUtils.copyProperties(inputSubscription, existingSubscriptionEntity.get(), "subscriptionsMessageTypes");
 			// Updating subscription entity.
-			SubscriptionEntity updatedSubscriptionEntity = subscriptionRepo.saveAndFlush(existingSubscriptionEntity.get());
+			SubscriptionEntity updatedSubscriptionEntity = null;
+			try {
+				updatedSubscriptionEntity = subscriptionRepo.saveAndFlush(existingSubscriptionEntity.get());
+			} catch (DataIntegrityViolationException e) {
+				throw new RuntimeException("Subscription could not be updated because that email already exists for another subscription.");
+			}
 			if (updatedSubscriptionEntity != null) {
 				// Deleting the message types related to this subscription in the table containing the many to many relationship.
 				subscriptionMessageTypeRepo.deleteBySubscriptionId(updatedSubscriptionEntity.getId());
@@ -146,7 +150,7 @@ public class SubscriptionService implements ISubscriptionService {
 		} else {
 			throw new RuntimeException("Not subscriptions found.");
 		}
-		logger.exit(subsriptions);
+		logger.exit(subscriptions);
 		return subscriptions;
 	}
 

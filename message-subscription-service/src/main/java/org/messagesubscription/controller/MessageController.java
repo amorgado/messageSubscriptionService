@@ -32,13 +32,13 @@ public class MessageController {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Message>> findMessage() {
+	public ResponseEntity<List<Message>> find() {
 		List<Message> messages = messageService.findMessages();
 		return ResponseEntity.ok(messages);
 	}
 
 	@PostMapping
-	public ResponseEntity<Response> createMessage(@Valid @RequestBody Message message) {
+	public ResponseEntity<Response> add(@Valid @RequestBody Message message) {
 		Message newMessage = messageService.createMessage(message);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newMessage.getId()).toUri();
 		return ResponseEntity.created(location).build();

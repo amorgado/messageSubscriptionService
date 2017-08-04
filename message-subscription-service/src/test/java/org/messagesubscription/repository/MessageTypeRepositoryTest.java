@@ -3,17 +3,10 @@ package org.messagesubscription.repository;
 import java.util.List;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.messagesubscription.entity.MessageEntity;
 import org.messagesubscription.entity.MessageTypeEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
-public class MessageTypeRepositoryTest extends BaseRepositoryTest{
-
+public class MessageTypeRepositoryTest extends BaseRepositoryTest {
 
 	// Delete cascade works for Message Types deleting Messages and SubscriptionsMessageTypes also if eager fetch removed.
 	@Test

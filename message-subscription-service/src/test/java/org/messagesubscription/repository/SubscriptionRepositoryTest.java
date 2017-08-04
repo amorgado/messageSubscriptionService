@@ -5,19 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.messagesubscription.entity.SubscriptionEntity;
 import org.messagesubscription.entity.SubscriptionsMessageTypesEntity;
 import org.messagesubscription.utils.MessageSubscriptionConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
-public class SubscriptionRepositoryTest extends BaseRepositoryTest{
+public class SubscriptionRepositoryTest extends BaseRepositoryTest {
 
 	public static final Logger logger = LoggerFactory.getLogger(SubscriptionRepositoryTest.class);
 

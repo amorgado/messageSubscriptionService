@@ -10,8 +10,8 @@ import org.messagesubscription.repository.MessageTypeRepository;
 import org.messagesubscription.repository.SubscriptionMessageTypeRepository;
 import org.messagesubscription.repository.SubscriptionRepository;
 import org.messagesubscription.utils.MessageSubscriptionConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.ext.XLogger;
+import org.slf4j.ext.XLoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class MessageSubscriptionServiceApplication {
 
-	private static final Logger logger = LoggerFactory.getLogger(MessageSubscriptionServiceApplication.class);
+	private final XLogger logger = XLoggerFactory.getXLogger(this.getClass());
 
 	public static void main(String[] args) {
 		SpringApplication.run(MessageSubscriptionServiceApplication.class, args);

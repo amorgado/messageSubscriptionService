@@ -26,6 +26,7 @@ public class MessageController {
 	@Autowired
 	IMessageService messageService;
 
+
 	@GetMapping("/{id}")
 	public ResponseEntity<Message> get(@PathVariable long id) {
 		return ResponseEntity.ok(messageService.getMessage(id));
